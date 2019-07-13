@@ -10,7 +10,7 @@ include_once "RandomBlock.php";
 
 use Totoro\Modules\RandomBlock;
 
-$rblock = new RandomBlock("block/");
+$rblock = new RandomBlock("block/"); // export your texture pack, before testing!
 $im = $rblock->renderImage(
 
     array(                      // block textures, you can use * wildcard
