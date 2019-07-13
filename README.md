@@ -59,3 +59,52 @@ Filltop example output:
 ![filltop example](https://i.imgur.com/qRnWBJQ.png)
 
 The first parameter for *fillTop* is like the first parameter for *renderImage*. You can select your textures for it. The second (optional) parameter (additive) is a boolean, if you set it true, then the top layer will be added to your image as a new row (so if you set 10 rows in renderImage, it will be 11), if false, then the first row became the "top layer". Easy.
+
+# setBackground and setBackgroundColor function
+You may see, that there are some transparent textures in Minecraft. By default *randomblock* doesn't care about transparency, and gives you a clean and beloved black background. But what do you do, when - for example - you want some underwater-themed thing?
+You need to set the background color for some watery - i preferred 38,92,255 - and set the background to the water texture. I added some watery things too.
+
+```
+$rblock->setBackgroundColor(38,92,255);
+$rblock->setBackground(array("water_flow.png"));
+
+$im = $rblock->renderImage(
+
+    array(
+        "brain_coral.png",
+        "brain_coral_fan.png",
+
+        "bubble_coral.png",
+        "bubble_coral_fan.png",
+
+        "fire_coral_fan.png",
+        "fire_coral_fan.png",
+
+        "tube_coral_fan.png",
+        "tube_coral_fan.png",
+
+        "horn_coral_fan.png",
+        "horn_coral_fan.png",
+
+        "sea_lantern.png",
+        "kelp.png",
+        "seagrass.png"
+    ),
+    10, 10,
+    2
+);
+```
+
+It looks like this:
+
+![watery thingie](https://i.imgur.com/ga2b7Xt.png)
+
+
+# setRandomEmptyChance - WTF?
+If you look at the previous example, you may think this is too much. And yes, it is, so you need to get some free space in your watery thingie.
+Then comes *setRandomEmptyChance* where you can set the upper limit of a random generator. Think it's like a dice, but you can set how many sides the dice have. If you roll 0 - yeah, the dice starts at zero, as every good dice - then you will have an empty block. If you set the dice to have 12 side, you will get a very small chance, to get empty pace. If you set it to 0, you will have plenty :)
+So, add 
+```$rblock->setRandomEmptyChance(2);```
+after the *setBackgroundColor* function calls, and voilá:
+
+![random empty watery thingie](https://i.imgur.com/FzAnw1h.png)
