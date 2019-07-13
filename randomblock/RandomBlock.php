@@ -17,6 +17,15 @@ class RandomBlock
     private $topLayerImages;
     private $topLayerAdditive = false;
 
+    private $backgroundEnable = false;
+    private $backgroundImages;
+
+    private $backgroundColorR = 0;
+    private $backgroundColorG = 0;
+    private $backgroundColorB = 0;
+
+    private $randomEmptyChange;
+
     /**
      * RandomBlock constructor.
      * @param $blockFolder
@@ -32,21 +41,46 @@ class RandomBlock
         $this->topLayerAdditive = $additive;
     }
 
+    public function setBackground($images) {
+        $this->backgroundEnable = true;
+        $this->backgroundImages = $images;
+    }
+
+    public function setBackgroundColor($r, $g, $b) {
+        $this->backgroundColorR = $r;
+        $this->backgroundColorG = $g;
+        $this->backgroundColorB = $b;
+    }
+
+    public function setRandomEmptyChance($chance) {
+        $this->randomEmptyChange = $chance;
+    }
+
     public function renderImage($images, $width = 5, $height = 5, $scale = 1) {
 
         $imageHandlers = array();
         $topLayerImageHandlers = array();
+        $backgroundImageHandlers = array();
 
         foreach ($images as $image) {
-            $files = glob($this->blockFolder . $image . ".png");
+            $files = glob($this->blockFolder . $image);
             foreach ($files as $file) {
                 array_push($imageHandlers, imagecreatefrompng($file));
             }
         }
 
+        if ($this->backgroundEnable) {
+            foreach ($this->backgroundImages as $image) {
+                $files = glob($this->blockFolder . $image);
+                foreach ($files as $file) {
+                    array_push($backgroundImageHandlers, imagecreatefrompng($file));
+                }
+            }
+        }
+
         if ($this->topLayerEnable) {
             foreach ($this->topLayerImages as $image) {
-                $files = glob($this->blockFolder . $image . ".png");
+                $files = glob($this->blockFolder . $image);
                 foreach ($files as $file) {
                     array_push($topLayerImageHandlers, imagecreatefrompng($file));
                 }
@@ -55,6 +89,7 @@ class RandomBlock
 
         $loadedBlockMax = sizeof($imageHandlers)-1;
         $topLayerloadedBlockMax = sizeof($topLayerImageHandlers)-1;
+        $backgroundloadedBlockMax = sizeof($backgroundImageHandlers)-1;
         $blockDimensions = imagesx($imageHandlers[0]); // getting dimensions from first image.
 
         if ($this->topLayerEnable && $this->topLayerAdditive) {
@@ -62,9 +97,39 @@ class RandomBlock
         }
 
         $canvas = imagecreatetruecolor($blockDimensions * $width, $blockDimensions * $height);
+        $alpha_channel = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+        imagecolortransparent($canvas, $alpha_channel);
+
+        imagefill($canvas, 0,0, imagecolorallocate ($canvas, $this->backgroundColorR, $this->backgroundColorG, $this->backgroundColorB));
+
+        if ($this->backgroundEnable) {
+            for ($x = 0; $x<$width; $x++) {
+                for ($y = 0; $y<$height; $y++) {
+
+                        imagecopy(
+                            $canvas,
+                            $backgroundImageHandlers[rand(0, $backgroundloadedBlockMax)],
+                            $x*$blockDimensions,
+                            $y*$blockDimensions,
+                            0,
+                            0,
+                            $blockDimensions,
+                            $blockDimensions
+                        );
+
+                }
+            }
+        }
+
 
         for ($x = 0; $x<$width; $x++) {
             for ($y = 0; $y<$height; $y++) {
+
+                if (isset($this->randomEmptyChange)) {
+                    if (rand(0, $this->randomEmptyChange) == 0) {
+                        continue;
+                    }
+                }
 
                 if ($y == 0 && $this->topLayerEnable) {
                     imagecopy(
