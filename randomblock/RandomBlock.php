@@ -13,6 +13,10 @@ class RandomBlock
 
     private $blockFolder;
 
+    private $topLayerEnable = false;
+    private $topLayerImages;
+    private $topLayerAdditive = false;
+
     /**
      * RandomBlock constructor.
      * @param $blockFolder
@@ -22,9 +26,16 @@ class RandomBlock
         $this->blockFolder = $blockFolder;
     }
 
+    public function fillTop($images, $additive = false) {
+        $this->topLayerEnable = true;
+        $this->topLayerImages = $images;
+        $this->topLayerAdditive = $additive;
+    }
+
     public function renderImage($images, $width = 5, $height = 5, $scale = 1) {
 
         $imageHandlers = array();
+        $topLayerImageHandlers = array();
 
         foreach ($images as $image) {
             $files = glob($this->blockFolder . $image . ".png");
@@ -33,23 +44,53 @@ class RandomBlock
             }
         }
 
+        if ($this->topLayerEnable) {
+            foreach ($this->topLayerImages as $image) {
+                $files = glob($this->blockFolder . $image . ".png");
+                foreach ($files as $file) {
+                    array_push($topLayerImageHandlers, imagecreatefrompng($file));
+                }
+            }
+        }
+
         $loadedBlockMax = sizeof($imageHandlers)-1;
+        $topLayerloadedBlockMax = sizeof($topLayerImageHandlers)-1;
         $blockDimensions = imagesx($imageHandlers[0]); // getting dimensions from first image.
+
+        if ($this->topLayerEnable && $this->topLayerAdditive) {
+            $height++;
+        }
 
         $canvas = imagecreatetruecolor($blockDimensions * $width, $blockDimensions * $height);
 
         for ($x = 0; $x<$width; $x++) {
             for ($y = 0; $y<$height; $y++) {
-                imagecopy(
-                    $canvas,
-                    $imageHandlers[rand(0, $loadedBlockMax)],
-                    $x*$blockDimensions,
-                    $y*$blockDimensions,
-                    0,
-                    0,
-                    $blockDimensions,
-                    $blockDimensions
+
+                if ($y == 0 && $this->topLayerEnable) {
+                    imagecopy(
+                        $canvas,
+                        $topLayerImageHandlers[rand(0, $topLayerloadedBlockMax)],
+                        $x*$blockDimensions,
+                        $y*$blockDimensions,
+                        0,
+                        0,
+                        $blockDimensions,
+                        $blockDimensions
                     );
+                } else {
+                    imagecopy(
+                        $canvas,
+                        $imageHandlers[rand(0, $loadedBlockMax)],
+                        $x*$blockDimensions,
+                        $y*$blockDimensions,
+                        0,
+                        0,
+                        $blockDimensions,
+                        $blockDimensions
+                    );
+                }
+
+
             }
         }
 
