@@ -54,4 +54,8 @@ $im = $rblock->renderImage(
 );
 ```
 
+Filltop example output:
+
+![filltop example](https://i.imgur.com/qRnWBJQ.png)
+
 The first parameter for *fillTop* is like the first parameter for *renderImage*. You can select your textures for it. The second (optional) parameter (additive) is a boolean, if you set it true, then the top layer will be added to your image as a new row (so if you set 10 rows in renderImage, it will be 11), if false, then the first row became the "top layer". Easy.
