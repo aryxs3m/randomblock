@@ -39,15 +39,15 @@ If you want to create a dirty-grassy background, you probably want grass blocks 
 ```
 $rblock->fillTop(
     array(
-        "grass_block_side"      // setting the first line to grass blocks
+        "grass_block_side.png"      // setting the first line to grass blocks
     )
 );
 
 $im = $rblock->renderImage(
 
     array(                      // block textures, you can use * wildcard
-        "dirt*",
-        "gravel*"
+        "dirt*.png",
+        "gravel*.png"
     ),
     10, 10,                     // rows/columns
     2                           // 2x scale output
@@ -102,7 +102,7 @@ It looks like this:
 
 # setRandomEmptyChance - WTF?
 If you look at the previous example, you may think this is too much. And yes, it is, so you need to get some free space in your watery thingie.
-Then comes *setRandomEmptyChance* where you can set the upper limit of a random generator. Think it's like a dice, but you can set how many sides the dice have. If you roll 0 - yeah, the dice starts at zero, as every good dice - then you will have an empty block. If you set the dice to have 12 side, you will get a very small chance, to get empty pace. If you set it to 0, you will have plenty :)
+Then comes *setRandomEmptyChance* where you can set the upper limit of a random generator. Think it's like a dice, but you can set how many sides the dice have. If you roll 0 - yeah, the dice starts at zero, as every good dice - then you will have an empty block. If you set the dice to have 12 side, you will get a very small chance, to get empty space. If you set it to 0, you will have plenty :)
 So, add 
 ```$rblock->setRandomEmptyChance(2);```
 after the *setBackgroundColor* function calls, and voilá:
